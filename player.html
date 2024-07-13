@@ -114,7 +114,7 @@
             fetchLicenseData(licenseUrl)
                 .then(licenseData => {
                     if (typeof licenseData === 'string' && licenseData === 'error') {
-                        showNotice('There is an error.(error 1)');
+                        showNotice('There is an error. (error 1)');
                     } else {
                         setupJWPlayer(licenseData);
                     }

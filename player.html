@@ -105,8 +105,6 @@
     const channelId = urlParams.get('channel');
     const streamUrl = `https://example.com/manifest.php?id=${channelId}`;
     const licenseUrl = `https://example.com/lic.php?id=${channelId}`;
-    const streamUrl = `https://example.com/manifest.mpd?id=${channelId}`;
-    const licenseUrl = `https://example.com/lic.mpd?id=${channelId}`;
 
     fetchLicenseData(licenseUrl)
       .then(licenseData => {

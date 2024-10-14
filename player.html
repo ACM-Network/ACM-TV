@@ -107,15 +107,15 @@
     <a href="https://t.me/ACM_Network" class="logo">ACM TV</a>
   </div>
   <div class="player-container">
-    <video id="videoPlayer" controls>
-      <source id="videoSource" src="" type="application/x-mpegURL">
-      Your browser does not support HTML5 video.
-    </video>
+    <video id="videoPlayer" controls></video>
     <div class="notice" id="notice" style="display: none;"></div>
   </div>
   <div class="footer">
     © 2024 ACM TV.
   </div>
+  
+  <!-- Include HLS.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('channel');
@@ -128,10 +128,22 @@
           showNotice('There is an error.(error 1)');
         } else {
           const videoPlayer = document.getElementById('videoPlayer');
-          const videoSource = document.getElementById('videoSource');
-          videoSource.src = streamUrl;
-          videoPlayer.load();
-          videoPlayer.play();
+
+          if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(streamUrl);
+            hls.attachMedia(videoPlayer);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+              videoPlayer.play();
+            });
+          } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            videoPlayer.src = streamUrl;
+            videoPlayer.addEventListener('loadedmetadata', function () {
+              videoPlayer.play();
+            });
+          } else {
+            showNotice('HLS is not supported in your browser.');
+          }
         }
       })
       .catch(error => {

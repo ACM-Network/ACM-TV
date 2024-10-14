@@ -52,6 +52,13 @@
       position: relative;
     }
 
+    video {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
     .footer {
       background-color: #333;
       padding: 5px;
@@ -85,22 +92,31 @@
       to { transform: translateX(0); }
     }
 
+    .notice {
+      background-color: #ffcccc;
+      color: #d8000c;
+      padding: 10px;
+      border: 1px solid #d8000c;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <a href="https://t.me/ACM_Network" class="logo">
-      ACM TV
-      </a>
+    <a href="https://t.me/ACM_Network" class="logo">ACM TV</a>
   </div>
   <div class="player-container">
-    <div id="player"></div>
+    <video id="videoPlayer" controls>
+      <source id="videoSource" src="" type="application/x-mpegURL">
+      Your browser does not support HTML5 video.
+    </video>
+    <div class="notice" id="notice" style="display: none;"></div>
   </div>
-    <div class="footer">
-       © 2024 ACM TV.
-    </div>
+  <div class="footer">
+    © 2024 ACM TV.
+  </div>
   <script>
-        // JW Player configuration
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('channel');
     const streamUrl = `https://example.com/manifest.php?id=${channelId}`;
@@ -111,22 +127,11 @@
         if (typeof licenseData === 'string' && licenseData === 'error') {
           showNotice('There is an error.(error 1)');
         } else {
-          const player = jwplayer('player');
-          player.setup({
-            file: streamUrl,
-            type: 'dash',
-            width: '100%',
-            aspectratio: '16:9',
-            autostart: true,
-            mute: false,
-            primary: 'html5',
-            drm: {
-              clearkey: {
-                keyId: licenseData.lic_keyId,
-                key: licenseData.lic_key
-              }
-            }
-          });
+          const videoPlayer = document.getElementById('videoPlayer');
+          const videoSource = document.getElementById('videoSource');
+          videoSource.src = streamUrl;
+          videoPlayer.load();
+          videoPlayer.play();
         }
       })
       .catch(error => {
@@ -144,22 +149,16 @@
     }
 
     function showNotice(message) {
-      const playerContainer = document.querySelector('.player-container');
-      const noticeDiv = document.createElement('div');
-      noticeDiv.classList.add('notice');
+      const noticeDiv = document.getElementById('notice');
       noticeDiv.textContent = message;
-      playerContainer.appendChild(noticeDiv);
+      noticeDiv.style.display = 'block';
     }
-    
-     window.addEventListener('error', event => {
-      const playerContainer = document.querySelector('.player-container');
-      const noticeDiv = playerContainer.querySelector('.notice');
-      if (noticeDiv) {
-        noticeDiv.textContent = `Error: ${event.error.message}`;
-      }
+
+    window.addEventListener('error', event => {
+      const noticeDiv = document.getElementById('notice');
+      noticeDiv.textContent = `Error: ${event.error.message}`;
+      noticeDiv.style.display = 'block';
     });
   </script>
- <!-- JW Player CDN -->
-  <script src="https://content.jwplatform.com/libraries/SAHhwvZq.js"></script>
 </body>
 </html>
